@@ -3,11 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Multimedia Project</title>
+    <title>Proiect Multimedia</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Proiect</h1>
-    <button id="btn">FETCH ALL</button>
+    <header>
+      <div class="header-left">
+        <span class="subtitle">Proiect Multimedia</span>
+      </div>
+      <div class="header-middle">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4628/4628667.png"
+          width="28"
+          height="28"
+          class="img-small"
+        />
+        <h1 class="title">VIZUALIZARE DATE</h1>
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4628/4628667.png"
+          width="28"
+          height="28"
+          class="img-small"
+        />
+      </div>
+      <nav class="header-right">
+        <div class="nav-icon">
+          <i class="fa-solid fa-chart-line" href="#line-chart-container"></i>
+        </div>
+        <div class="nav-icon">
+          <i class="fa-solid fa-photo-film" href="#bubble-chart-container"></i>
+        </div>
+        <div class="nav-icon">
+          <i class="fa-solid fa-database" href="#table-container"></i>
+        </div>
+      </nav>
+    </header>
+    <div class="container">
+      <div class="chart-container" id="line-chart-container">
+        <h2>LINE CHART</h2>
+      </div>
+      <div class="chart-container" id="bubble-chart-container">
+        <h2>BUBBLE CHART</h2>
+      </div>
+      <div class="chart-container" id="table-container">
+        <h2>TABLE</h2>
+      </div>
+      <button id="btn-fetch">FETCH ALL</button>
+    </div>
     <script type="module" src="script.js"></script>
   </body>
 </html>

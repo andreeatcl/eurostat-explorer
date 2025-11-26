@@ -1,9 +1,4 @@
-const btn = document.getElementById("btn");
-
-const years = [
-  2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
-  2013, 2014, 2015, 2016, 2017, 2018,
-];
+const btn = document.getElementById("btn-fetch");
 
 // prettier-ignore
 const countries = [
@@ -22,10 +17,8 @@ const eurostatURL =
   "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/";
 
 const fetchData = async (dataset, country) => {
-  let url = `${eurostatURL}${dataset}&geo=${country}`;
-  for (const year of years) {
-    url += `&time=${year}`;
-  }
+  // get last 15 years data (2010-2024*)
+  let url = `${eurostatURL}${dataset}&geo=${country}&sinceTimePeriod=2010&untilTimePeriod=2025`;
 
   const res = await fetch(url);
   const data = await res.json();
@@ -55,7 +48,7 @@ const fetchAll = async () => {
     const rawValues = data.value;
 
     for (const [index, value] of Object.entries(rawValues)) {
-      const year = 2000 + parseInt(index);
+      const year = 2010 + parseInt(index);
 
       result.push({
         tara: country,

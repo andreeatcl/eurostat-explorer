@@ -1,8 +1,18 @@
+:root {
+  --european-blue: #003399;
+  --european-yellow: #ffcc00;
+  --white: #fffdfa;
+  --tinted-white: #ebf1ff;
+}
+
 /* ============= basic css reset ============= */
 
 html {
   box-sizing: border-box;
   font-size: 16px;
+  font-family: "Roboto Mono", monospace, Arial;
+  font-weight: 400;
+  scroll-behavior: smooth;
 }
 
 *,
@@ -26,4 +36,95 @@ ul {
 img {
   max-width: 100%;
   height: auto;
+}
+
+body {
+  background-color: var(--european-blue);
+  min-height: 100vh;
+}
+
+/* ============= header ============= */
+
+header {
+  background-color: var(--white);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left,
+.header-middle,
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+}
+
+.header-middle {
+  flex-grow: 1;
+}
+
+.title {
+  font-weight: 700;
+  padding: 0 1rem;
+}
+
+.header-right {
+  display: flex;
+  gap: 3rem;
+}
+
+.nav-icon i {
+  color: var(--european-blue);
+  font-size: 1.5rem;
+}
+
+.nav-icon i:hover {
+  cursor: pointer;
+  color: var(--european-yellow);
+}
+
+/* ============= main container ============= */
+
+.container {
+  background-color: var(--white);
+  width: 80%;
+  margin: 5rem auto;
+  border-radius: 1em;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  background-color: var(--tinted-white);
+  padding: 1rem;
+  border-radius: 1em;
+  margin: 1.5rem 0;
+}
+
+/* ============= line chart container ============= */
+
+/* ============= bubble chart container ============= */
+
+/* ============= table container ============= */
+
+/* ============= footer ============= */
+
+/* ============= TEMPORARY ============= */
+
+#btn-fetch {
+  background-color: var(--european-blue);
+  color: var(--white);
+  font-weight: 700;
+  margin: 0 auto;
+  padding: 1em;
+  border-radius: 5px;
+  border: none;
+}
+
+#btn-fetch:hover {
+  cursor: pointer;
 }
