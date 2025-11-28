@@ -122,12 +122,13 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 1rem 5rem;
 }
 
 .table-settings select {
   border: 2px solid var(--european-blue);
   border-radius: 6px;
-  padding: 2px;
+  padding: 4px;
 }
 
 table {
@@ -150,19 +151,6 @@ td {
 td:nth-child(4n + 1) {
   background-color: var(--tinted-white);
   font-weight: 700;
-}
-
-/*   JUST A TEST!!!!!   */
-td:nth-child(4n + 2) {
-  background-color: lightgreen;
-}
-
-td:nth-child(4n + 3) {
-  background-color: lightpink;
-}
-
-td:nth-child(4n + 4) {
-  background-color: lightgray;
 }
 
 /* ============= footer ============= */
