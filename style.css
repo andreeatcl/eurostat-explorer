@@ -64,6 +64,7 @@ header {
 
 .header-middle {
   flex-grow: 1;
+  text-align: center;
 }
 
 .title {
@@ -110,6 +111,59 @@ header {
 /* ============= bubble chart container ============= */
 
 /* ============= table container ============= */
+
+#table-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.table-settings {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-settings select {
+  border: 2px solid var(--european-blue);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 1rem 5rem;
+}
+
+th {
+  font-size: 1.2rem;
+  background-color: var(--white);
+}
+
+th,
+td {
+  border: 3px solid var(--european-blue);
+  padding: 10px;
+  text-align: center;
+}
+
+td:nth-child(4n + 1) {
+  background-color: var(--tinted-white);
+  font-weight: 700;
+}
+
+/*   JUST A TEST!!!!!   */
+td:nth-child(4n + 2) {
+  background-color: lightgreen;
+}
+
+td:nth-child(4n + 3) {
+  background-color: lightpink;
+}
+
+td:nth-child(4n + 4) {
+  background-color: lightgray;
+}
 
 /* ============= footer ============= */
 
