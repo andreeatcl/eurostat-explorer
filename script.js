@@ -1,6 +1,5 @@
-// ==================================== INIT ====================================
+// ==================================== BEGIN INIT ====================================
 
-const btnFetch = document.getElementById("btn-fetch");
 let allData = [];
 
 // prettier-ignore
@@ -19,17 +18,35 @@ const datasets = {
 const eurostatURL =
   "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/";
 
-// ==================================== RENDER UI ====================================
+// ==================================== END INIT ====================================
 
-// dynamically create select options
-const select = document.getElementById("table-select");
-for (let i = 2009; i < 2025; i++) {
-  if (i === 2023) {
-    select.innerHTML += `<option value=${i} selected="selected">${i}</option>`;
-  } else select.innerHTML += `<option value=${i}>${i}</option>`;
+// ==================================== BEGIN RENDER UI ====================================
+
+const barCountrySelect = document.getElementById("bar-country-select");
+countries.forEach((country) => {
+  if (country === "RO") {
+    barCountrySelect.innerHTML += `<option value=${country} selected="selected">${country}</option>`;
+  } else
+    barCountrySelect.innerHTML += `<option value=${country}>${country}</option>`;
+});
+
+const barIndSelect = document.getElementById("bar-ind-select");
+["PIB", "SV", "POP"].forEach((ind) => {
+  if (ind === "PIB") {
+    barIndSelect.innerHTML += `<option value=${ind} selected="selected">${ind}</option>`;
+  } else barIndSelect.innerHTML += `<option value=${ind}>${ind}</option>`;
+});
+
+const tableSelect = document.getElementById("table-select");
+for (let year = 2009; year < 2025; year++) {
+  if (year === 2023) {
+    tableSelect.innerHTML += `<option value=${year} selected="selected">${year}</option>`;
+  } else tableSelect.innerHTML += `<option value=${year}>${year}</option>`;
 }
 
-// ==================================== TOAST ====================================
+// ==================================== END RENDER UI ====================================
+
+// ==================================== BEGIN TOAST ====================================
 
 const toast = document.getElementById("loading-toast");
 const toastText = document.getElementById("toast-text");
@@ -49,7 +66,9 @@ const hideToast = () => {
   toast.classList.remove("visible");
 };
 
-// ==================================== DATA HANDLING ====================================
+// ==================================== END TOAST ====================================
+
+// ==================================== BEGIN DATA HANDLING ====================================
 
 const fetchData = async (dataset, country) => {
   // get last 15 years data (2010-2024*)
@@ -141,7 +160,9 @@ const getData = async (country, year, indicator) => {
   return filteredData;
 };
 
-// ==================================== TABLE ====================================
+// ==================================== END DATA HANDLING ====================================
+
+// ==================================== BEGIN TABLE ====================================
 
 // calculam valorile rgb pentru fiecare celula
 const getCellColor = (value, min, max, avg) => {
@@ -213,18 +234,17 @@ const addDataToTable = async (year) => {
   }
 };
 
-// ==================================== EVENT LISTENERS ====================================
+// ==================================== END TABLE ====================================
+
+// ==================================== BEGIN EVENT LISTENERS ====================================
 
 window.addEventListener("DOMContentLoaded", async () => {
   allData = await fetchAll();
-  addDataToTable(parseInt(select.value));
+  addDataToTable(parseInt(tableSelect.value));
 });
 
-btnFetch.addEventListener("click", async () => {
-  const result = await getData("RO", 0, "SV");
-  console.log(result);
-});
-
-select.addEventListener("change", (e) => {
+tableSelect.addEventListener("change", (e) => {
   addDataToTable(parseInt(e.target.value));
 });
+
+// ==================================== END EVENT LISTENERS ====================================

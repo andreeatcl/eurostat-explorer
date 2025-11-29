@@ -11,7 +11,8 @@
 
 ## To do:
 
-- afișare grafică evoluție pentru un indicator (PIB/SV/Pop) și o țară selectată de către utilizator - se va folosi un element de tip SVG (grafică vectorială); line chart
+- store extracted data in local storage + (check if extracted today. if not => api call)
+- afișare grafică evoluție pentru un indicator (PIB/SV/Pop) și o țară selectată de către utilizator - se va folosi un element de tip SVG (grafică vectorială); BAR chart
 - pentru graficul de la punctul anterior să se afișeze un tooltip care să afișeze anul și valorile pentru PIB/SV/Pop pentru perioada corespunzătoare poziției mouse-ului
 - afișare bubble chart pentru un an selectat de utilizator folosind un element de tip canvas (grafică raster)
 - animație bubble chart (afișare bubble chart succesiv pentru toți anii)

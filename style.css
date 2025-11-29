@@ -41,7 +41,6 @@ img {
 
 body {
   background-color: var(--european-blue);
-  height: 100vh;
 }
 
 /* ============= header ============= */
@@ -52,6 +51,18 @@ header {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  position: sticky;
+  top: 0;
+}
+
+.subtitle {
+  text-decoration: none;
+  color: var(--european-blue);
+}
+
+.subtitle:hover {
+  cursor: pointer;
 }
 
 .header-left,
@@ -105,32 +116,47 @@ header {
   padding: 1rem;
   border-radius: 1em;
   margin: 1.5rem 0;
-}
-
-/* ============= line chart container ============= */
-
-/* ============= bubble chart container ============= */
-
-/* ============= table container ============= */
-
-#table-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.table-settings {
+.chart-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 5rem;
 }
 
-.table-settings select {
+select {
   border: 2px solid var(--european-blue);
   border-radius: 6px;
   padding: 4px;
 }
+
+/* ============= bar chart container ============= */
+
+.bar-controls {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* ============= bubble chart container ============= */
+
+#btn-play {
+  background-color: var(--european-blue);
+  color: var(--white);
+  font-weight: 700;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  border: none;
+}
+
+#btn-play:hover {
+  cursor: pointer;
+}
+
+/* ============= table container ============= */
 
 table {
   border-collapse: collapse;

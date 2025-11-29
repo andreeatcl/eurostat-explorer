@@ -19,7 +19,7 @@
   <body>
     <header>
       <div class="header-left">
-        <span class="subtitle">Proiect Multimedia</span>
+        <a href="#" class="subtitle"><span>Proiect Multimedia</span></a>
       </div>
       <div class="header-middle">
         <img
@@ -36,25 +36,38 @@
       </div>
       <nav class="header-right">
         <div class="nav-icon">
-          <i class="fa-solid fa-chart-line" href="#line-chart-container"></i>
+          <a href="#bar-chart-container"
+            ><i class="fa-solid fa-chart-line"></i
+          ></a>
         </div>
         <div class="nav-icon">
-          <i class="fa-solid fa-photo-film" href="#bubble-chart-container"></i>
+          <a href="#bubble-chart-container"
+            ><i class="fa-solid fa-photo-film"></i
+          ></a>
         </div>
         <div class="nav-icon">
-          <i class="fa-solid fa-database" href="#table-container"></i>
+          <a href="#table-container"><i class="fa-solid fa-database"></i></a>
         </div>
       </nav>
     </header>
     <div class="container">
-      <div class="chart-container" id="line-chart-container">
-        <h2>LINE CHART</h2>
-      </div>
-      <div class="chart-container" id="bubble-chart-container">
-        <h2>BUBBLE CHART</h2>
-      </div>
-      <div class="chart-container" id="table-container">
-        <div class="table-settings">
+      <section class="chart-container" id="bar-chart-container">
+        <div class="chart-header">
+          <h2>BAR CHART</h2>
+          <div class="bar-controls">
+            <select name="bar-country-select" id="bar-country-select"></select>
+            <select name="bar-ind-select" id="bar-ind-select"></select>
+          </div>
+        </div>
+      </section>
+      <section class="chart-container" id="bubble-chart-container">
+        <div class="chart-header">
+          <h2>BUBBLE CHART</h2>
+          <button id="btn-play">PLAY</button>
+        </div>
+      </section>
+      <section class="chart-container" id="table-container">
+        <div class="chart-header">
           <h2>TABLE</h2>
           <select name="table-select" id="table-select"></select>
         </div>
@@ -69,8 +82,7 @@
           </thead>
           <tbody></tbody>
         </table>
-      </div>
-      <button id="btn-fetch">FETCH ALL</button>
+      </section>
     </div>
     <div id="loading-toast" class="loading-toast">
       <span id="toast-text">Loading data...</span>
