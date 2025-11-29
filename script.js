@@ -1,4 +1,7 @@
+// ==================================== INIT ====================================
+
 const btnFetch = document.getElementById("btn-fetch");
+let allData = [];
 
 // prettier-ignore
 const countries = [
@@ -16,6 +19,8 @@ const datasets = {
 const eurostatURL =
   "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/";
 
+// ==================================== RENDER UI ====================================
+
 // dynamically create select options
 const select = document.getElementById("table-select");
 for (let i = 2009; i < 2025; i++) {
@@ -24,7 +29,28 @@ for (let i = 2009; i < 2025; i++) {
   } else select.innerHTML += `<option value=${i}>${i}</option>`;
 }
 
-// https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?sex=T&age=Y1&geo=BE&sinceTimePeriod=2009&untilTimePeriod=2025
+// ==================================== TOAST ====================================
+
+const toast = document.getElementById("loading-toast");
+const toastText = document.getElementById("toast-text");
+
+const showToast = () => {
+  toastText.textContent = "Getting data from Eurostat...";
+  toast.classList.remove("success");
+  toast.classList.add("visible");
+};
+
+const updateToastSuccess = () => {
+  toastText.textContent = "Data loaded successfully!";
+  toast.classList.add("success");
+};
+
+const hideToast = () => {
+  toast.classList.remove("visible");
+};
+
+// ==================================== DATA HANDLING ====================================
+
 const fetchData = async (dataset, country) => {
   // get last 15 years data (2010-2024*)
   // for SV, there is NO data available for 2024 so we must adjust the time period i guess
@@ -35,28 +61,42 @@ const fetchData = async (dataset, country) => {
     url = `${eurostatURL}${dataset}&geo=${country}&sinceTimePeriod=2010&untilTimePeriod=2025`;
   }
 
-  const res = await fetch(url);
-  const data = await res.json();
-
-  return data;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error(`Error fetching from ${url}: ${err}`);
+  }
 };
 
 const fetchAll = async () => {
-  const tasks = [];
+  showToast();
 
-  for (const [indicator, dataset] of Object.entries(datasets)) {
-    for (const country of countries) {
-      tasks.push(
-        fetchData(dataset, country).then((data) => ({
-          indicator,
-          country,
-          data,
-        }))
-      );
+  const tasks = [];
+  try {
+    for (const [indicator, dataset] of Object.entries(datasets)) {
+      for (const country of countries) {
+        tasks.push(
+          fetchData(dataset, country).then((data) => ({
+            indicator,
+            country,
+            data,
+          }))
+        );
+      }
     }
+  } catch (err) {
+    console.error("Error fetching data: ", err);
   }
 
   const responses = await Promise.all(tasks);
+  updateToastSuccess();
+
+  setTimeout(() => {
+    hideToast();
+  }, 2000);
+
   const result = [];
 
   for (const { indicator, country, data } of responses) {
@@ -80,11 +120,6 @@ const fetchAll = async () => {
   return result;
 };
 
-console.log("Fetching data from Eurostat...");
-const allData = await fetchAll();
-// console.log(allData);
-console.log("All data fetched.");
-
 // return filtered data based on params (country, year, indicator)
 // if country or indicator = "ALL" then pass and return data for all
 // if year = 0 then pass and return data for all
@@ -105,6 +140,8 @@ const getData = async (country, year, indicator) => {
 
   return filteredData;
 };
+
+// ==================================== TABLE ====================================
 
 // calculam valorile rgb pentru fiecare celula
 const getCellColor = (value, min, max, avg) => {
@@ -176,7 +213,12 @@ const addDataToTable = async (year) => {
   }
 };
 
-addDataToTable(parseInt(select.value));
+// ==================================== EVENT LISTENERS ====================================
+
+window.addEventListener("DOMContentLoaded", async () => {
+  allData = await fetchAll();
+  addDataToTable(parseInt(select.value));
+});
 
 btnFetch.addEventListener("click", async () => {
   const result = await getData("RO", 0, "SV");

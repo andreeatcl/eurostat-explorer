@@ -3,6 +3,7 @@
   --european-yellow: #ffcc00;
   --white: #fffdfa;
   --tinted-white: #ebf1ff;
+  --success-green: #10b981;
 }
 
 /* ============= basic css reset ============= */
@@ -40,7 +41,7 @@ img {
 
 body {
   background-color: var(--european-blue);
-  min-height: 100vh;
+  height: 100vh;
 }
 
 /* ============= header ============= */
@@ -153,8 +154,40 @@ td:nth-child(4n + 1) {
   font-weight: 700;
 }
 
-/* ============= footer ============= */
+/* ============= loading toast ============= */
 
+.loading-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+
+  transform: translate(-50%, 150%);
+
+  background: var(--white);
+  padding: 12px 24px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--european-blue);
+  z-index: 1000;
+
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.4s ease;
+}
+
+.loading-toast.visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.loading-toast.success {
+  border: 3px solid var(--success-green);
+}
 /* ============= TEMPORARY ============= */
 
 #btn-fetch {

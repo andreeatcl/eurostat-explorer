@@ -6,6 +6,8 @@
 - Format data similar to eurostat.json
 - Built the UI
 - afișare sub formă de tabel a datelor disponibile pentru un an selectat de către utilizator (tarile pe linii și cei trei indicatori pe coloană); fiecare celulă va primi o culoare (de la roșu la verde) în funcție de distanța față de media uniunii
+- implemented a "Loading data..." popup
+- sped up the data loading process
 
 ## To do:
 
@@ -14,7 +16,6 @@
 - afișare bubble chart pentru un an selectat de utilizator folosind un element de tip canvas (grafică raster)
 - animație bubble chart (afișare bubble chart succesiv pentru toți anii)
 - polish the UI
-- implement a "Loading data..." popup
 
 ### Notes:
 
