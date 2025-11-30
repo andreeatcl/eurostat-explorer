@@ -46,6 +46,154 @@ for (let year = 2009; year < 2025; year++) {
 
 // ==================================== END RENDER UI ====================================
 
+// ==================================== BEGIN BAR CHART CLASS ====================================
+
+export class BarChart {
+  #svgns = "http://www.w3.org/2000/svg";
+  #svg;
+  #tooltip;
+
+  constructor(domElement) {
+    this.#createSVG();
+    domElement.appendChild(this.#svg);
+    this.#createTooltip(domElement);
+  }
+
+  draw(data) {
+    this.#svg.replaceChildren();
+
+    const width = this.#svg.clientWidth;
+    const height = this.#svg.clientHeight;
+
+    const padding = 70;
+
+    const actualWidth = width - padding * 2;
+    const actualHeight = height - padding * 2;
+
+    const barSlotWidth = actualWidth / data.length;
+    const maxValue = Math.max(...data.map((d) => d[1]));
+    const scale = actualHeight / maxValue;
+
+    // X AXIS
+    const xAxis = document.createElementNS(this.#svgns, "line");
+    xAxis.setAttribute("x1", padding);
+    xAxis.setAttribute("y1", height - padding);
+    xAxis.setAttribute("x2", width - padding);
+    xAxis.setAttribute("y2", height - padding);
+    this.#svg.appendChild(xAxis);
+
+    // Y AXIS
+    const yAxis = document.createElementNS(this.#svgns, "line");
+    yAxis.setAttribute("x1", padding);
+    yAxis.setAttribute("y1", padding);
+    yAxis.setAttribute("x2", padding);
+    yAxis.setAttribute("y2", height - padding);
+    this.#svg.appendChild(yAxis);
+
+    // ticks and labels (y axis)
+    const tickCount = 5;
+    for (let i = 0; i <= tickCount; i++) {
+      const value = (maxValue / tickCount) * i;
+      const y = height - padding - value * scale;
+
+      const tick = document.createElementNS(this.#svgns, "line");
+      tick.setAttribute("x1", padding - 5);
+      tick.setAttribute("y1", y);
+      tick.setAttribute("x2", padding);
+      tick.setAttribute("y2", y);
+      this.#svg.appendChild(tick);
+
+      const label = document.createElementNS(this.#svgns, "text");
+      label.textContent = Math.round(value);
+      label.setAttribute("x", padding - 10);
+      label.setAttribute("y", y + 4);
+      label.setAttribute("text-anchor", "end");
+      label.classList.add("label-text");
+      this.#svg.appendChild(label);
+    }
+
+    // bars
+    for (let i = 0; i < data.length; i++) {
+      const label = data[i][0];
+      const value = data[i][1];
+
+      // valoare -> px
+      const barHeight = value * scale;
+
+      const actualBarWidth = barSlotWidth * 0.5;
+
+      // flip
+      const x =
+        padding + i * barSlotWidth + (barSlotWidth - actualBarWidth) / 2;
+      const y = height - padding - barHeight;
+
+      const bar = document.createElementNS(this.#svgns, "rect");
+      bar.classList.add("bar");
+
+      bar.setAttribute("x", x);
+      bar.setAttribute("y", y);
+      bar.setAttribute("width", actualBarWidth);
+      bar.setAttribute("height", barHeight);
+
+      // tooltip
+      bar.addEventListener("mousemove", (e) => {
+        this.#tooltip.style.display = "block";
+        this.#tooltip.textContent = `${label}: ${value}`;
+        this.#tooltip.style.left = e.clientX + 10 + "px";
+        this.#tooltip.style.top = e.clientY + 10 + "px";
+      });
+
+      bar.addEventListener("mouseleave", () => {
+        this.#tooltip.style.display = "none";
+      });
+
+      this.#svg.appendChild(bar);
+
+      // labels - x axis
+      const text = document.createElementNS(this.#svgns, "text");
+      text.textContent = label;
+      text.setAttribute("x", x + actualBarWidth / 2);
+      text.setAttribute("y", height - padding + 20);
+      text.setAttribute("text-anchor", "middle");
+      text.style.fontSize = "12px";
+      this.#svg.appendChild(text);
+    }
+  }
+
+  #createSVG() {
+    this.#svg = document.createElementNS(this.#svgns, "svg");
+    this.#svg.style.backgroundColor = "var(--tinted-white)";
+    this.#svg.setAttribute("width", "100%");
+    this.#svg.setAttribute("height", "100%");
+  }
+
+  #createTooltip(container) {
+    this.#tooltip = document.createElement("div");
+    this.#tooltip.classList.add("tooltip");
+
+    container.appendChild(this.#tooltip);
+  }
+}
+
+// ==================================== END BAR CHART CLASS ====================================
+
+// ==================================== BEGIN BAR CHART APP ====================================
+
+const barChart = new BarChart(document.getElementById("bar-chart"));
+
+const updateBarChart = async (country, indicator) => {
+  const jsonBarData = await getData(country, 0, indicator);
+  const barData = jsonBarData.map((obj) => [obj.an.toString(), obj.valoare]);
+  barChart.draw(barData);
+
+  const barTitle = document.getElementById("bar-chart-title");
+  barTitle.textContent = `Evolutia ${indicator} in ${country}, ${
+    barData[0][0]
+  }-${barData[barData.length - 1][0]}`;
+};
+
+// ==================================== END BAR CHART APP ====================================
+
 // ==================================== BEGIN TOAST ====================================
 
 const toast = document.getElementById("loading-toast");
@@ -240,11 +388,24 @@ const addDataToTable = async (year) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
   allData = await fetchAll();
+  updateBarChart(barCountrySelect.value, barIndSelect.value);
   addDataToTable(parseInt(tableSelect.value));
+});
+
+window.addEventListener("resize", () => {
+  updateBarChart(barCountrySelect.value, barIndSelect.value);
 });
 
 tableSelect.addEventListener("change", (e) => {
   addDataToTable(parseInt(e.target.value));
+});
+
+barCountrySelect.addEventListener("change", (e) => {
+  updateBarChart(barCountrySelect.value, barIndSelect.value);
+});
+
+barIndSelect.addEventListener("change", (e) => {
+  updateBarChart(barCountrySelect.value, barIndSelect.value);
 });
 
 // ==================================== END EVENT LISTENERS ====================================
