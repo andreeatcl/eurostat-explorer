@@ -18,6 +18,14 @@ const datasets = {
 const eurostatURL =
   "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/";
 
+const btnImport = document.getElementById("btn-import");
+const btnPlay = document.getElementById("btn-play");
+const bubbleYear = document.getElementById("bubble-chart-year");
+
+const delay = async (amount) => {
+  return new Promise((res) => setTimeout(res, amount));
+};
+
 // ==================================== END INIT ====================================
 
 // ==================================== BEGIN RENDER UI ====================================
@@ -48,7 +56,7 @@ for (let year = 2009; year < 2025; year++) {
 
 // ==================================== BEGIN BAR CHART CLASS ====================================
 
-export class BarChart {
+class BarChart {
   #svgns = "http://www.w3.org/2000/svg";
   #svg;
   #tooltip;
@@ -194,6 +202,174 @@ const updateBarChart = async (country, indicator) => {
 
 // ==================================== END BAR CHART APP ====================================
 
+// ==================================== BEGIN BUBBLE CHART CLASS ====================================
+
+class BubbleChart {
+  #canvas;
+
+  constructor(canvas) {
+    this.#canvas = canvas;
+  }
+
+  draw(data) {
+    const ctx = this.#canvas.getContext("2d");
+    const width = this.#canvas.width;
+    const height = this.#canvas.height;
+
+    const padding = 60;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#f8faff";
+    ctx.fillRect(0, 0, width, height);
+
+    const graphW = width - padding * 2;
+    const graphH = Math.min(height - padding * 2, graphW * 0.6);
+
+    const topOffset = (height - graphH) / 2;
+
+    const xVals = data.map((d) => d[1]);
+    const yVals = data.map((d) => d[2]);
+    const rVals = data.map((d) => d[3]);
+
+    const maxX = Math.max(...xVals);
+    const minX = Math.min(...xVals);
+    const maxY = Math.max(...yVals);
+    const maxR = Math.max(...rVals);
+
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+
+    // Y AXIS
+    ctx.beginPath();
+    ctx.moveTo(padding, topOffset);
+    ctx.lineTo(padding, topOffset + graphH);
+    ctx.stroke();
+
+    // X AXIS
+    ctx.beginPath();
+    ctx.moveTo(padding, topOffset + graphH);
+    ctx.lineTo(padding + graphW, topOffset + graphH);
+    ctx.stroke();
+
+    ctx.font = "13px Arial";
+    ctx.fillStyle = "#000";
+
+    // Y TICKS
+    for (let i = 0; i <= 8; i++) {
+      const yVal = Math.round((maxY / 8) * i);
+      const y = topOffset + graphH - (i * graphH) / 8;
+
+      ctx.beginPath();
+      ctx.moveTo(padding - 5, y);
+      ctx.lineTo(padding, y);
+      ctx.stroke();
+
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillText(yVal, padding - 10, y);
+    }
+
+    // X TICKS
+    for (let i = 0; i <= 5; i++) {
+      const xVal = Math.round(minX + ((maxX - minX) / 5) * i);
+      const x = padding + (i * graphW) / 5;
+
+      ctx.beginPath();
+      ctx.moveTo(x, topOffset + graphH);
+      ctx.lineTo(x, topOffset + graphH + 5);
+      ctx.stroke();
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText(xVal, x, topOffset + graphH + 8);
+    }
+
+    // BUBBLES!!
+    for (const [label, xVal, yVal, rVal] of data) {
+      const px = padding + ((xVal - minX) / (maxX - minX)) * graphW;
+      const py = topOffset + graphH - (yVal / maxY) * graphH;
+
+      const pr = (rVal / maxR) * 40;
+
+      // bubble
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(100, 149, 237, 0.55)";
+      ctx.fill();
+      ctx.strokeStyle = "#3b4e80";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // bubble labels
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      if (pr >= 10) {
+        ctx.fillStyle = "#000";
+        ctx.font = "14px Arial";
+        ctx.fillText(label, px, py);
+      } else {
+        ctx.fillStyle = "#000";
+        ctx.font = "13px Arial";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(label, px, py - pr - 2);
+      }
+    }
+  }
+}
+
+// ==================================== END BUBBLE CHART CLASS ====================================
+
+// ==================================== BEGIN BUBBLE CHART APP ====================================
+
+const getBubbleData = (arrayData) => {
+  const groupedData = new Map();
+
+  for (const item of arrayData) {
+    const key = item.tara;
+    const indicator = item.indicator;
+    const valoare = item.valoare;
+
+    // to do: deal with malta 2012 issue
+    if (!groupedData.has(key)) {
+      groupedData.set(key, {
+        tara: key,
+        sv: null,
+        pib: null,
+        pop: null,
+      });
+    }
+
+    const group = groupedData.get(key);
+
+    if (indicator === "SV") {
+      group.sv = valoare;
+    } else if (indicator === "PIB") {
+      group.pib = valoare;
+    } else if (indicator === "POP") {
+      group.pop = valoare;
+    }
+    groupedData.set(key, group);
+  }
+
+  const output = Array.from(groupedData.values()).map((group) => {
+    return [group.tara, group.sv, group.pib, group.pop];
+  });
+  return output;
+};
+
+const updateBubbleChart = async (year) => {
+  const arrayData = await getData("ALL", year, "ALL");
+  const actualBubbleData = getBubbleData(arrayData);
+  bubbleYear.textContent = `Date pentru: ${year}`;
+
+  const canvas = document.getElementById("bubble-chart");
+  const bubbleChart = new BubbleChart(canvas);
+  bubbleChart.draw(actualBubbleData);
+};
+
+// ==================================== END BUBBLE CHART APP ====================================
+
 // ==================================== BEGIN TOAST ====================================
 
 const toast = document.getElementById("loading-toast");
@@ -235,6 +411,33 @@ const fetchData = async (dataset, country) => {
   } catch (err) {
     console.error(`Error fetching from ${url}: ${err}`);
   }
+};
+
+const checkLocalStorage = async () => {
+  const data = JSON.parse(localStorage.getItem("EUROSTAT_DATA"));
+  const lastUpdated = localStorage.getItem("LAST_UPDATED");
+
+  const now = new Date();
+
+  if (!data || !lastUpdated) {
+    const allData = await fetchAll();
+    localStorage.setItem("EUROSTAT_DATA", JSON.stringify(allData));
+    localStorage.setItem("LAST_UPDATED", now.toISOString());
+    return allData;
+  }
+
+  const lastDate = new Date(lastUpdated);
+  const diffMs = now - lastDate;
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  if (diffMs > oneDay) {
+    const allData = await fetchAll();
+    localStorage.setItem("EUROSTAT_DATA", JSON.stringify(allData));
+    localStorage.setItem("LAST_UPDATED", now.toISOString());
+    return allData;
+  }
+
+  return data;
 };
 
 const fetchAll = async () => {
@@ -387,8 +590,9 @@ const addDataToTable = async (year) => {
 // ==================================== BEGIN EVENT LISTENERS ====================================
 
 window.addEventListener("DOMContentLoaded", async () => {
-  allData = await fetchAll();
+  allData = await checkLocalStorage();
   updateBarChart(barCountrySelect.value, barIndSelect.value);
+  updateBubbleChart(2023);
   addDataToTable(parseInt(tableSelect.value));
 });
 
@@ -400,12 +604,24 @@ tableSelect.addEventListener("change", (e) => {
   addDataToTable(parseInt(e.target.value));
 });
 
-barCountrySelect.addEventListener("change", (e) => {
+barCountrySelect.addEventListener("change", () => {
   updateBarChart(barCountrySelect.value, barIndSelect.value);
 });
 
-barIndSelect.addEventListener("change", (e) => {
+barIndSelect.addEventListener("change", () => {
   updateBarChart(barCountrySelect.value, barIndSelect.value);
+});
+
+btnImport.addEventListener("click", async () => {
+  localStorage.clear();
+  allData = await checkLocalStorage();
+});
+
+btnPlay.addEventListener("click", async () => {
+  for (let year = 2010; year < 2024; year++) {
+    updateBubbleChart(year);
+    await delay(1000);
+  }
 });
 
 // ==================================== END EVENT LISTENERS ====================================

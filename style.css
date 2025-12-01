@@ -72,13 +72,11 @@ header {
 .header-right {
   display: flex;
   align-items: center;
-  justify-content: center;
   padding: 1rem 2.5rem;
 }
 
 .header-middle {
-  flex-grow: 1;
-  text-align: center;
+  justify-content: center;
 }
 
 .title {
@@ -86,9 +84,16 @@ header {
   padding: 0 1rem;
 }
 
+.header-left {
+  flex: 1;
+  justify-content: flex-start;
+}
+
 .header-right {
+  flex: 1;
+  justify-content: flex-end;
   display: flex;
-  gap: 3rem;
+  gap: 2rem;
 }
 
 .nav-icon i {
@@ -99,6 +104,11 @@ header {
 .nav-icon i:hover {
   cursor: pointer;
   color: var(--european-yellow);
+}
+
+#btn-import {
+  background-color: transparent;
+  border: none;
 }
 
 /* ============= main container ============= */
@@ -138,7 +148,7 @@ select {
 
 /* ============= bar chart container ============= */
 
-.bar-controls {
+.duo-controls {
   display: flex;
   gap: 1.5rem;
 }
@@ -205,6 +215,11 @@ svg line {
 
 #btn-play:hover {
   cursor: pointer;
+}
+
+canvas {
+  background-color: var(--tinted-white);
+  padding: 5px 25px;
 }
 
 /* ============= table container ============= */

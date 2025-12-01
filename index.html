@@ -37,7 +37,7 @@
       <nav class="header-right">
         <div class="nav-icon">
           <a href="#bar-chart-container"
-            ><i class="fa-solid fa-chart-line"></i
+            ><i class="fa-solid fa-chart-column"></i
           ></a>
         </div>
         <div class="nav-icon">
@@ -46,7 +46,10 @@
           ></a>
         </div>
         <div class="nav-icon">
-          <a href="#table-container"><i class="fa-solid fa-database"></i></a>
+          <a href="#table-container"><i class="fa-solid fa-table-list"></i></a>
+        </div>
+        <div class="nav-icon">
+          <button id="btn-import"><i class="fa-solid fa-database"></i></button>
         </div>
       </nav>
     </header>
@@ -54,7 +57,7 @@
       <section class="chart-container" id="bar-chart-container">
         <div class="chart-header">
           <h2>BAR CHART</h2>
-          <div class="bar-controls">
+          <div class="duo-controls">
             <select name="bar-country-select" id="bar-country-select"></select>
             <select name="bar-ind-select" id="bar-ind-select"></select>
           </div>
@@ -65,13 +68,22 @@
       <section class="chart-container" id="bubble-chart-container">
         <div class="chart-header">
           <h2>BUBBLE CHART</h2>
-          <button id="btn-play">PLAY</button>
+          <div class="duo-controls">
+            <span id="bubble-chart-year">Date pentru: 2023</span>
+            <button id="btn-play">PLAY</button>
+          </div>
         </div>
+        <canvas id="bubble-chart" width="500" height="350">
+          Your browser does not support canvas
+        </canvas>
       </section>
       <section class="chart-container" id="table-container">
         <div class="chart-header">
           <h2>TABLE</h2>
-          <select name="table-select" id="table-select"></select>
+          <div class="duo-controls">
+            <span>Date pentru: </span>
+            <select name="table-select" id="table-select"></select>
+          </div>
         </div>
         <table id="table" class="table">
           <thead>

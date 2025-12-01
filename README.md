@@ -10,12 +10,13 @@
 - sped up the data loading process
 - afișare grafică evoluție pentru un indicator (PIB/SV/Pop) și o țară selectată de către utilizator - se va folosi un element de tip SVG (grafică vectorială); BAR chart
 - pentru graficul de la punctul anterior să se afișeze un tooltip care să afișeze anul și valorile pentru PIB/SV/Pop pentru perioada corespunzătoare poziției mouse-ului
+- store extracted data in local storage + (check if extracted today. if not => api call) + import button
+- afișare bubble chart pentru un an selectat de utilizator folosind un element de tip canvas (grafică raster)
+- animație bubble chart (afișare bubble chart succesiv pentru toți anii)
 
 ## To do:
 
-- store extracted data in local storage + (check if extracted today. if not => api call) !important
-- afișare bubble chart pentru un an selectat de utilizator folosind un element de tip canvas (grafică raster)
-- animație bubble chart (afișare bubble chart succesiv pentru toți anii)
+- remove malta 2012 for bubble chart
 - review code and refactor where needed
 - polish the UI
 
