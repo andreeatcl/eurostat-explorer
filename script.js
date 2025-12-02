@@ -22,6 +22,11 @@ const btnImport = document.getElementById("btn-import");
 const btnPlay = document.getElementById("btn-play");
 const bubbleYear = document.getElementById("bubble-chart-year");
 
+/**
+ * functie ajutatoare pentru animatia bubble chart-ului
+ * @param {number} amount - cu cat intarziem programul (in ms)
+ * @returns
+ */
 const delay = async (amount) => {
   return new Promise((res) => setTimeout(res, amount));
 };
@@ -29,6 +34,11 @@ const delay = async (amount) => {
 // ==================================== END INIT ====================================
 
 // ==================================== BEGIN RENDER UI ====================================
+
+/**
+ * RENDER (static) UI
+ * functii pentru popularea select-urilor cu optiuni
+ */
 
 const barCountrySelect = document.getElementById("bar-country-select");
 countries.forEach((country) => {
@@ -56,17 +66,27 @@ for (let year = 2009; year < 2025; year++) {
 
 // ==================================== BEGIN BAR CHART CLASS ====================================
 
+/**
+ * clasa pentru randarea unui bar chart in SVG
+ */
 class BarChart {
   #svgns = "http://www.w3.org/2000/svg";
   #svg;
   #tooltip;
 
+  /**
+   * initializare grafic: creeaza SVG + tooltip
+   * @param {HTMLElement} domElement - containerul in care punem graficul
+   */
   constructor(domElement) {
     this.#createSVG();
     domElement.appendChild(this.#svg);
     this.#createTooltip(domElement);
   }
 
+  /**
+   * @param {Array<[string, number]>} data - perechi de tip (label X, valoare Y)
+   */
   draw(data) {
     this.#svg.replaceChildren();
 
@@ -82,7 +102,9 @@ class BarChart {
     const maxValue = Math.max(...data.map((d) => d[1]));
     const scale = actualHeight / maxValue;
 
-    // X AXIS
+    /**
+     * adauga X axis
+     */
     const xAxis = document.createElementNS(this.#svgns, "line");
     xAxis.setAttribute("x1", padding);
     xAxis.setAttribute("y1", height - padding);
@@ -90,7 +112,9 @@ class BarChart {
     xAxis.setAttribute("y2", height - padding);
     this.#svg.appendChild(xAxis);
 
-    // Y AXIS
+    /**
+     * adauga Y axis
+     */
     const yAxis = document.createElementNS(this.#svgns, "line");
     yAxis.setAttribute("x1", padding);
     yAxis.setAttribute("y1", padding);
@@ -98,7 +122,9 @@ class BarChart {
     yAxis.setAttribute("y2", height - padding);
     this.#svg.appendChild(yAxis);
 
-    // ticks and labels (y axis)
+    /**
+     * adauga labels + ticks pe axa Y
+     */
     const tickCount = 5;
     for (let i = 0; i <= tickCount; i++) {
       const value = (maxValue / tickCount) * i;
@@ -120,17 +146,20 @@ class BarChart {
       this.#svg.appendChild(label);
     }
 
-    // bars
+    /**
+     * deseneaza barele
+     */
     for (let i = 0; i < data.length; i++) {
       const label = data[i][0];
       const value = data[i][1];
 
-      // valoare -> px
       const barHeight = value * scale;
 
       const actualBarWidth = barSlotWidth * 0.5;
 
-      // flip
+      /**
+       * flip
+       */
       const x =
         padding + i * barSlotWidth + (barSlotWidth - actualBarWidth) / 2;
       const y = height - padding - barHeight;
@@ -143,7 +172,9 @@ class BarChart {
       bar.setAttribute("width", actualBarWidth);
       bar.setAttribute("height", barHeight);
 
-      // tooltip
+      /**
+       * tooltip care afiseaza valori on hover
+       */
       bar.addEventListener("mousemove", (e) => {
         this.#tooltip.style.display = "block";
         this.#tooltip.textContent = `${label}: ${value}`;
@@ -157,7 +188,9 @@ class BarChart {
 
       this.#svg.appendChild(bar);
 
-      // labels - x axis
+      /**
+       * labels pentru bare
+       */
       const text = document.createElementNS(this.#svgns, "text");
       text.textContent = label;
       text.setAttribute("x", x + actualBarWidth / 2);
@@ -168,6 +201,9 @@ class BarChart {
     }
   }
 
+  /**
+   * creeaza elementul svg
+   */
   #createSVG() {
     this.#svg = document.createElementNS(this.#svgns, "svg");
     this.#svg.style.backgroundColor = "var(--tinted-white)";
@@ -175,6 +211,10 @@ class BarChart {
     this.#svg.setAttribute("height", "100%");
   }
 
+  /**
+   * creeaza elementul tooltip
+   * @param {HTMLElement} container - containerul parinte
+   */
   #createTooltip(container) {
     this.#tooltip = document.createElement("div");
     this.#tooltip.classList.add("tooltip");
@@ -189,8 +229,13 @@ class BarChart {
 
 const barChart = new BarChart(document.getElementById("bar-chart"));
 
+/**
+ * actualizeaza bar chart
+ * @param {string} country - tara ("RO")
+ * @param {"PIB"|"SV"|"POP"} indicator - tipul indicatorului
+ */
 const updateBarChart = async (country, indicator) => {
-  const jsonBarData = await getData(country, 0, indicator);
+  const jsonBarData = getData(country, 0, indicator);
   const barData = jsonBarData.map((obj) => [obj.an.toString(), obj.valoare]);
   barChart.draw(barData);
 
@@ -204,13 +249,28 @@ const updateBarChart = async (country, indicator) => {
 
 // ==================================== BEGIN BUBBLE CHART CLASS ====================================
 
+/**
+ * clasa pentru randarea unui bubble chart in canvas
+ */
 class BubbleChart {
   #canvas;
 
+  /**
+   * initializeaza (referinta la) canvas
+   * @param {HTMLCanvasElement} canvas
+   */
   constructor(canvas) {
     this.#canvas = canvas;
   }
 
+  /**
+   * deseneaza bubble chart
+   * @param {Array<[string, number, number, number]>} data - [label, xVal, yVal, rVal]
+   * label - tara ("RO")
+   * xVal - speranta de viata
+   * yVal - PIB per capita
+   * rVal - (radius/raza) - populatie
+   */
   draw(data) {
     const ctx = this.#canvas.getContext("2d");
     const width = this.#canvas.width;
@@ -239,13 +299,17 @@ class BubbleChart {
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 2;
 
-    // Y AXIS
+    /**
+     * axa Y
+     */
     ctx.beginPath();
     ctx.moveTo(padding, topOffset);
     ctx.lineTo(padding, topOffset + graphH);
     ctx.stroke();
 
-    // X AXIS
+    /**
+     * axa X
+     */
     ctx.beginPath();
     ctx.moveTo(padding, topOffset + graphH);
     ctx.lineTo(padding + graphW, topOffset + graphH);
@@ -254,7 +318,9 @@ class BubbleChart {
     ctx.font = "13px Arial";
     ctx.fillStyle = "#000";
 
-    // Y TICKS
+    /**
+     * labels & ticks pentru axa Y
+     */
     for (let i = 0; i <= 8; i++) {
       const yVal = Math.round((maxY / 8) * i);
       const y = topOffset + graphH - (i * graphH) / 8;
@@ -269,7 +335,9 @@ class BubbleChart {
       ctx.fillText(yVal, padding - 10, y);
     }
 
-    // X TICKS
+    /**
+     * labels & ticks pentru axa X
+     */
     for (let i = 0; i <= 5; i++) {
       const xVal = Math.round(minX + ((maxX - minX) / 5) * i);
       const x = padding + (i * graphW) / 5;
@@ -284,7 +352,9 @@ class BubbleChart {
       ctx.fillText(xVal, x, topOffset + graphH + 8);
     }
 
-    // BUBBLES!!
+    /**
+     *  functia care deseneaza bubbles
+     */
     for (const [label, xVal, yVal, rVal] of data) {
       const px = padding + ((xVal - minX) / (maxX - minX)) * graphW;
       const py = topOffset + graphH - (yVal / maxY) * graphH;
@@ -304,6 +374,10 @@ class BubbleChart {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
+      /**
+       * bubble prea mic? => label se va afisa deasupra bulei
+       * altfel, label in centru
+       */
       if (pr >= 10) {
         ctx.fillStyle = "#000";
         ctx.font = "14px Arial";
@@ -322,6 +396,11 @@ class BubbleChart {
 
 // ==================================== BEGIN BUBBLE CHART APP ====================================
 
+/**
+ * grupam datele pentru bubble chart in functie de tara
+ * @param {Array<{tara:string, indicator:string, valoare:number}>} arrayData - date pt anul selectat
+ * @returns {Array<[string, number, number, number]>} - [tara, SV, PIB, POP] - adica [label, xVal, yVal, rVal]
+ */
 const getBubbleData = (arrayData) => {
   const groupedData = new Map();
 
@@ -358,8 +437,13 @@ const getBubbleData = (arrayData) => {
   return output;
 };
 
-const updateBubbleChart = async (year) => {
-  const arrayData = await getData("ALL", year, "ALL");
+/**
+ * actualizeaza bar chart
+ * @param {number} year - anul pt care trebuie sa afisam
+ * fata de bar chart (care se actualizeaza cand avem window resize), bubble chart se actualizeaza pt animatie
+ */
+const updateBubbleChart = (year) => {
+  const arrayData = getData("ALL", year, "ALL");
   const actualBubbleData = getBubbleData(arrayData);
   bubbleYear.textContent = `Date pentru: ${year}`;
 
@@ -371,6 +455,11 @@ const updateBubbleChart = async (year) => {
 // ==================================== END BUBBLE CHART APP ====================================
 
 // ==================================== BEGIN TOAST ====================================
+
+/**
+ * TOAST
+ * afisarea unui mesaj menit sa semnaleze apelarea api-ului eurostat, respectiv succesul apelului
+ */
 
 const toast = document.getElementById("loading-toast");
 const toastText = document.getElementById("toast-text");
@@ -394,14 +483,23 @@ const hideToast = () => {
 
 // ==================================== BEGIN DATA HANDLING ====================================
 
+/**
+ * preluarea datelor din baza de date Eurostat in functie de dataset + tara
+ * @param {string} dataset - cod dataset (informatii in cerinta proiectului)
+ * @param {string} country - cod tara
+ * @returns {Promise<any>} - raspunsul JSON
+ * NOTA: NU exista date pentru speranta de viata din anul 2024 la momentul realizarii proiectului.
+ * (cont.) asadar, pentru a respecta cerinta, am ales sa modific perioada la 2009-2023 pentru SV
+ * CONSECINTE: bar chart modificat pentru SV (2009-2023)
+ * CONSECINTE: bubble chart afiseaza doar datele din perioada 2010-2023
+ * CONSECINTE: tabelul are 2 coloane fara date pentru anul 2009, respectiv 1 coloana pentru 2024
+ */
 const fetchData = async (dataset, country) => {
-  // get last 15 years data (2010-2024*)
-  // for SV, there is NO data available for 2024 so we must adjust the time period i guess
   let url = "";
   if (dataset === "demo_mlexpec?sex=T&age=Y1") {
-    url = `${eurostatURL}${dataset}&geo=${country}&sinceTimePeriod=2009&untilTimePeriod=2025`;
+    url = `${eurostatURL}${dataset}&geo=${country}&sinceTimePeriod=2009&untilTimePeriod=2023`;
   } else {
-    url = `${eurostatURL}${dataset}&geo=${country}&sinceTimePeriod=2010&untilTimePeriod=2025`;
+    url = `${eurostatURL}${dataset}&geo=${country}&sinceTimePeriod=2010&untilTimePeriod=2024`;
   }
 
   try {
@@ -413,6 +511,11 @@ const fetchData = async (dataset, country) => {
   }
 };
 
+/**
+ * verifica daca sunt stocate date in localStorage
+ * reincarca datele daca lipsesc sau sunt mai vechi de 24h
+ * @returns {Promise<Array<{tara:string, an:number, indicator:string, valoare:number}>>}
+ */
 const checkLocalStorage = async () => {
   const data = JSON.parse(localStorage.getItem("EUROSTAT_DATA"));
   const lastUpdated = localStorage.getItem("LAST_UPDATED");
@@ -440,6 +543,10 @@ const checkLocalStorage = async () => {
   return data;
 };
 
+/**
+ * apeleaza pe rand fetchData pentru fiecare indicator -> fiecare tara. apoi strange toate datele
+ * @returns {Promise<Array<{tara:string, an:number, indicator:string, valoare:number}>>}
+ */
 const fetchAll = async () => {
   showToast();
 
@@ -490,10 +597,14 @@ const fetchAll = async () => {
   return result;
 };
 
-// return filtered data based on params (country, year, indicator)
-// if country or indicator = "ALL" then pass and return data for all
-// if year = 0 then pass and return data for all
-const getData = async (country, year, indicator) => {
+/**
+ * filtreaza datele dupa tara/an/indicator.
+ * @param {string} country - cod tara / "ALL" pentru toate tarile
+ * @param {number} year - anul / 0 pentru toti anii
+ * @param {"SV"|"POP"|"PIB"|"ALL"} indicator - indicator / "ALL" pentru toti indicatorii
+ * @returns {Promise<Array<{tara:string, an:number, indicator:string, valoare:number}>>}
+ */
+const getData = (country, year, indicator) => {
   let filteredData = allData;
 
   if (country !== "ALL" && countries.includes(country)) {
@@ -515,19 +626,27 @@ const getData = async (country, year, indicator) => {
 
 // ==================================== BEGIN TABLE ====================================
 
-// calculam valorile rgb pentru fiecare celula
-const getCellColor = (value, min, max, avg) => {
+/**
+ * calculeaza valorile RGB pentru fiecare celula
+ * @param {number} val - valoarea curenta
+ * @param {number} min - minim pe coloana
+ * @param {number} max - maxim pe coloana
+ * @param {number} avg - media pe coloana
+ * @returns {string} - culoarea in format `rgb(r, g, b)`
+ */
+const getCellColor = (val, min, max, avg) => {
   let r, g, b;
 
   // daca valoarea este sub medie => mix intre rosu si alb
-  // daca valoarea este sub medie => mix intre alb si verde
-  if (value <= avg) {
-    const ratio = (value - min) / (avg - min || 1);
+  if (val <= avg) {
+    const ratio = (val - min) / (avg - min || 1);
     r = 255;
     g = Math.round(255 * ratio);
     b = Math.round(255 * ratio);
-  } else {
-    const ratio = (value - avg) / (max - avg || 1);
+  }
+  // daca valoarea este peste medie => mix intre alb si verde
+  else {
+    const ratio = (val - avg) / (max - avg || 1);
     r = Math.round(255 * (1 - ratio));
     g = 255;
     b = Math.round(255 * (1 - ratio));
@@ -536,15 +655,18 @@ const getCellColor = (value, min, max, avg) => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-// render table data
+/**
+ * populeaza table body cu date pentru anul selectat
+ * @param {number} year - anul pentru afisare
+ */
 const addDataToTable = async (year) => {
   const tbody = document.querySelector("#table tbody");
 
   tbody.innerHTML = "";
 
-  const filteredData = await getData("ALL", year, "ALL");
+  const filteredData = getData("ALL", year, "ALL");
 
-  // get the min, max, avg for each column
+  // get min, max, avg for each column
   const stats = {};
   ["PIB", "SV", "POP"].forEach((ind) => {
     const values = filteredData
@@ -589,6 +711,9 @@ const addDataToTable = async (year) => {
 
 // ==================================== BEGIN EVENT LISTENERS ====================================
 
+/**
+ * init app la incarcarea DOM-ului: preluare date, draw charts + render table
+ */
 window.addEventListener("DOMContentLoaded", async () => {
   allData = await checkLocalStorage();
   updateBarChart(barCountrySelect.value, barIndSelect.value);
@@ -596,27 +721,45 @@ window.addEventListener("DOMContentLoaded", async () => {
   addDataToTable(parseInt(tableSelect.value));
 });
 
+/**
+ * redesenam bar chart-ul daca fereastra se redimensioneaza
+ */
 window.addEventListener("resize", () => {
   updateBarChart(barCountrySelect.value, barIndSelect.value);
 });
 
+/**
+ * la schimbarea anului de afisare a tabelului, se actualizeaza tabelul
+ */
 tableSelect.addEventListener("change", (e) => {
   addDataToTable(parseInt(e.target.value));
 });
 
+/**
+ * la schimbarea tarii de afisare a bar chart-ului, se actualizeaza graficul
+ */
 barCountrySelect.addEventListener("change", () => {
   updateBarChart(barCountrySelect.value, barIndSelect.value);
 });
 
+/**
+ * la schimbarea indicatorului de afisare a bar chart-ului, se actualizeaza graficul
+ */
 barIndSelect.addEventListener("change", () => {
   updateBarChart(barCountrySelect.value, barIndSelect.value);
 });
 
+/**
+ * fortam reincarcarea datelor de la eurostat la apasarea butonului de import (DB icon)
+ */
 btnImport.addEventListener("click", async () => {
   localStorage.clear();
   allData = await checkLocalStorage();
 });
 
+/**
+ * se ruleaza animatia bubble chart pentru anii 2010-2023
+ */
 btnPlay.addEventListener("click", async () => {
   for (let year = 2010; year < 2024; year++) {
     updateBubbleChart(year);

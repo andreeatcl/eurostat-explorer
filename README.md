@@ -13,14 +13,9 @@
 - store extracted data in local storage + (check if extracted today. if not => api call) + import button
 - afișare bubble chart pentru un an selectat de utilizator folosind un element de tip canvas (grafică raster)
 - animație bubble chart (afișare bubble chart succesiv pentru toți anii)
+- added JSDoc comments
+- review code and refactor where needed (kinda)
 
 ## To do:
 
 - remove malta 2012 for bubble chart
-- review code and refactor where needed
-- polish the UI
-
-### Notes:
-
-- there are no SV values for the year of 2024 => adjusted to 2009-2023 data
-- Malta SV for 2012 is a missing value => only 1214 values fetched from Eurostat compared to expected 1215 (27\*15\*3)
