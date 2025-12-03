@@ -409,7 +409,6 @@ const getBubbleData = (arrayData) => {
     const indicator = item.indicator;
     const valoare = item.valoare;
 
-    // to do: deal with malta 2012 issue
     if (!groupedData.has(key)) {
       groupedData.set(key, {
         tara: key,
@@ -431,9 +430,19 @@ const getBubbleData = (arrayData) => {
     groupedData.set(key, group);
   }
 
-  const output = Array.from(groupedData.values()).map((group) => {
-    return [group.tara, group.sv, group.pib, group.pop];
-  });
+  /**
+   * remove Malta 2012 object
+   */
+  const output = Array.from(groupedData.values())
+    .filter((group) => {
+      if (group.tara === "MT" && group.sv === null) {
+        return false;
+      }
+      return true;
+    })
+    .map((group) => {
+      return [group.tara, group.sv, group.pib, group.pop];
+    });
   return output;
 };
 
