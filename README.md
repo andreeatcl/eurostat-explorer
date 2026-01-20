@@ -10,6 +10,8 @@ The application fetches real-time data from Eurostat regarding GDP, Life Expecta
 
 Live Demo available at: https://andreeatcl.github.io/eurostat-explorer/
 
+<img width="1900" height="1075" alt="image" src="https://github.com/user-attachments/assets/094f26c7-2220-44b3-b7bc-7847e65c844a" />
+
 ## Features
 
 The application supports the following core functionalities:
