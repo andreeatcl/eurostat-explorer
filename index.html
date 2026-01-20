@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -35,6 +35,9 @@
         />
       </div>
       <nav class="header-right">
+        <button id="btn-menu" class="menu-btn" type="button">
+          <i class="fa-solid fa-bars"></i>
+        </button>
         <div class="nav-icon">
           <a href="#bar-chart-container"
             ><i class="fa-solid fa-chart-column"></i
@@ -51,6 +54,17 @@
         <div class="nav-icon">
           <button id="btn-import"><i class="fa-solid fa-database"></i></button>
         </div>
+      </nav>
+
+      <nav id="mobile-menu" class="mobile-menu" hidden>
+        <a class="mobile-menu-item" href="#bar-chart-container">Bar chart</a>
+        <a class="mobile-menu-item" href="#bubble-chart-container"
+          >Bubble chart</a
+        >
+        <a class="mobile-menu-item" href="#table-container">Table</a>
+        <button id="btn-import-mobile" class="mobile-menu-item" type="button">
+          Import data
+        </button>
       </nav>
     </header>
     <div class="container">

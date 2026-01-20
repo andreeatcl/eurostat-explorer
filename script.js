@@ -62,6 +62,41 @@ for (let year = 2009; year < 2025; year++) {
   } else tableSelect.innerHTML += `<option value=${year}>${year}</option>`;
 }
 
+const btnMenu = document.getElementById("btn-menu");
+const mobileMenu = document.getElementById("mobile-menu");
+const btnImportMobile = document.getElementById("btn-import-mobile");
+
+const setMobileMenuOpen = (isOpen) => {
+  if (!btnMenu || !mobileMenu) return;
+  if (isOpen) mobileMenu.removeAttribute("hidden");
+  else mobileMenu.setAttribute("hidden", "");
+};
+
+if (btnMenu && mobileMenu) {
+  btnMenu.addEventListener("click", () => {
+    const isOpen = !mobileMenu.hasAttribute("hidden");
+    setMobileMenuOpen(!isOpen);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setMobileMenuOpen(false);
+  });
+
+  mobileMenu.addEventListener("click", (e) => {
+    const clickedLinkOrButton = e.target.closest("a,button");
+    if (!clickedLinkOrButton) return;
+    if (clickedLinkOrButton.tagName.toLowerCase() === "a")
+      setMobileMenuOpen(false);
+  });
+}
+
+if (btnImportMobile && btnImport) {
+  btnImportMobile.addEventListener("click", () => {
+    btnImport.click();
+    setMobileMenuOpen(false);
+  });
+}
+
 // ==================================== END RENDER UI ====================================
 
 // ==================================== BEGIN BAR CHART CLASS ====================================
@@ -568,7 +603,7 @@ const fetchAll = async () => {
             indicator,
             country,
             data,
-          }))
+          })),
         );
       }
     }
@@ -699,7 +734,7 @@ const addDataToTable = async (year) => {
 
     for (const ind of ["PIB", "SV", "POP"]) {
       const object = filteredData.find(
-        (obj) => obj.tara === country && obj.indicator === ind
+        (obj) => obj.tara === country && obj.indicator === ind,
       );
       const td = document.createElement("td");
       td.textContent = object ? object.valoare : "N/A";
